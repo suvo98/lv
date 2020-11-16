@@ -10,20 +10,55 @@ use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['login']]);
-    }
+//    public function __construct()
+//    {
+//        $this->middleware('auth:api', ['except' => ['login']]);
+//    }
     public function login(Request $request)
     {
-        // return password_hash('123456', PASSWORD_BCRYPT);
-        $credentials = $request->only('username', 'password');
-     
-        if ($token = $this->guard()->attempt($credentials)) {
-            return $this->respondWithToken($token);
+        $username = $request->input('username');
+        $password = md5($request->input('password'));
+
+        $res = DB::table('sec_user')->select('EmployeeID', 'UserType', 'IsActive', 'UserName')
+            ->where('UserName', $username)
+            ->where('Password', $password)->first();
+
+        if ($res) {
+            if ($res->IsActive == 1) {
+                if ($res->UserType == 'Student') {
+                    $student = DB::table('aca_stu_basic')
+                        ->select('ID', 'Name', 'ApplicationNo', 'RegistrationNo', 'ClassRoll', 'ExamRoll')
+                        ->where('ClassRoll', $res->EmployeeID)->first();
+
+                    return [
+                        'StudentID' => $student->ID,
+                        'StudentName' => $student->Name,
+                        'ClassRoll' => $student->ClassRoll,
+                        'RegistrationNo' => $student->RegistrationNo,
+                        'UserName' => $res->UserName,
+                        'UserType' => $res->UserType,
+                        'EmployeeID' => $res->EmployeeID,
+                    ];
+                } else {
+                    return response()->json([
+                        'label' => 'Invalid!',
+                        'error' => 'Unauthorized User',
+                    ], 404);
+                }
+            } else {
+                return response()->json([
+                    'label' => 'Status!',
+                    'error' => 'User Not Active',
+                ], 404);
+            }
+
+        } else {
+            return response()->json([
+                'label' => 'Invalid User!',
+                'error' => 'Username or password is incorrect.',
+            ], 404);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
     }
 
     public function getAuthUser()

@@ -15,9 +15,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
-Route::get('course-list', 'CourseController@courseList');
-Route::get('program-list', 'CourseController@programList');
-Route::get('semester-list', 'CourseController@semesterList');
-Route::get('batch-list', 'CourseController@batchList');
-Route::get('schedule-list', 'CourseController@ScheduleList');
+Route::group(array('before' => 'csrf', ['middleware' => 'web']), function () {
+    Route::get('course-list', 'CourseController@courseList');
+    Route::get('program-list', 'CourseController@programList');
+    Route::get('semester-list', 'CourseController@semesterList');
+    Route::get('batch-list', 'CourseController@batchList');
+    Route::get('schedule-list', 'CourseController@ScheduleList');
+    Route::post('login', 'UserController@login');
+});
