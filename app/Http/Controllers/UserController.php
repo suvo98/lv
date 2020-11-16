@@ -40,6 +40,19 @@ class UserController extends Controller
                         'EmployeeID' => $res->EmployeeID,
                     ];
                 } else {
+                    $student = DB::table('hrm_employee')
+                        ->select('ID', 'Name', 'EmployeeNo')
+                        ->where('ClassRoll', $res->EmployeeID)->first();
+
+                    return [
+                        'StudentID' => $student->ID,
+                        'StudentName' => $student->Name,
+                        'ClassRoll' => $student->EmployeeNo,
+                        'RegistrationNo' => $student->EmployeeNo,
+                        'UserName' => $res->UserName,
+                        'UserType' => $res->UserType,
+                        'EmployeeID' => $res->EmployeeID,
+                    ];
                     return response()->json([
                         'label' => 'Invalid!',
                         'error' => 'Unauthorized User',
