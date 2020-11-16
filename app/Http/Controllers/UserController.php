@@ -16,7 +16,7 @@ class UserController extends Controller
 //    }
     public function login(Request $request)
     {
-        $username = $request->input('username');
+       return $username = $request->input('username');
         $password = md5($request->input('password'));
 
         $res = DB::table('sec_user')->select('EmployeeID', 'UserType', 'IsActive', 'UserName')
