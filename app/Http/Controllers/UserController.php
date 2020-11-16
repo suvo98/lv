@@ -42,7 +42,7 @@ class UserController extends Controller
                 } else {
                     $student = DB::table('hrm_employee')
                         ->select('ID', 'Name', 'EmployeeNo')
-                        ->where('ClassRoll', $res->EmployeeID)->first();
+                        ->where('EmployeeNo', $res->EmployeeID)->first();
 
                     return [
                         'StudentID' => $student->ID,
